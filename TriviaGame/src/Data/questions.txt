@@ -1,0 +1,18 @@
+Geography|Easy|What is the capital of France?|Paris,London,Berlin,Madrid|A
+Geography|Easy|Which country has the largest land area?|Russia,Canada,USA,China|A
+Geography|Medium|What is the capital of Australia?|Sydney,Melbourne,Canberra,Brisbane|C
+Geography|Medium|Which river is the longest in the world?|Amazon,Nile,Yangtze,Mississippi|B
+Geography|Hard|What is the smallest country in the world by area?|Monaco,San Marino,Vatican City,Liechtenstein|C
+Geography|Hard|Which country has the most natural lakes?|USA,Russia,Canada,Brazil|C
+Math|Easy|2 + 3 = ?|4,5,6,7|B
+Math|Easy|What is 12 x 12?|124,144,132,148|B
+Math|Medium|What is the square root of 144?|10,11,12,13|C
+Math|Medium|What is 15% of 200?|25,30,35,40|B
+Math|Hard|What is the derivative of x^2?|x,2x,x^2,2|B
+Math|Hard|What is log base 2 of 64?|4,5,6,8|C
+Science|Easy|H2O is?|Water,Oxygen,Hydrogen,Helium|A
+Science|Easy|What planet is closest to the Sun?|Venus,Earth,Mars,Mercury|D
+Science|Medium|What gas do plants absorb during photosynthesis?|Oxygen,Nitrogen,CO2,Hydrogen|C
+Science|Medium|What is the chemical symbol for gold?|Go,Gd,Au,Ag|C
+Science|Hard|What is the speed of light in km/s?|200000,299792,310000,150000|B
+Science|Hard|What is the atomic number of carbon?|4,6,8,12|B

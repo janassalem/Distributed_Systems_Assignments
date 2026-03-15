@@ -1,0 +1,7 @@
+# Trivia Game Configuration
+# Lines starting with # are comments
+
+min_players=2
+max_players=4
+question_time_seconds=15
+points_per_correct=10
