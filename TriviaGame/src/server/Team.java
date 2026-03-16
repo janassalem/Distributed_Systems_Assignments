@@ -9,7 +9,7 @@ public class Team {
 
     private final String name;
     private final ClientHandler creator;
-    private final List<ClientHandler> members = new ArrayList<>();
+    private final List<ClientHandler> members = Collections.synchronizedList(new ArrayList<>());  // concurrent call
 
     // Game settings chosen by the creator
     private String category;

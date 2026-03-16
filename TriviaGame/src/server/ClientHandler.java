@@ -7,7 +7,6 @@ import java.util.concurrent.CountDownLatch;
 
 /**
  * Handles one connected client.
- *
  * Lifecycle:
  *   1. Auth phase      — login or register
  *   2. Main menu       — Single Player | Multiplayer
@@ -203,7 +202,7 @@ public class ClientHandler implements Runnable {
 
         // Separate thread polls for a match so the main thread can stay alert
         Thread poller = new Thread(() -> {
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 try { Thread.sleep(1000); } catch (InterruptedException e) { return; }
                 List<Team> match = gameServer.getTeamManager().tryMatch(teamName);
                 if (match != null) {

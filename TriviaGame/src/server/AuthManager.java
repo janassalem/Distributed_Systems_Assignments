@@ -2,11 +2,12 @@ package server;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AuthManager {
 
     // username -> User object
-    private Map<String, User> users = new HashMap<>();
+    private Map<String, User> users = new ConcurrentHashMap<>();  // safe across multiple threads.
     private final String filePath;
 
     // Return codes
@@ -17,23 +18,29 @@ public class AuthManager {
 
     public AuthManager(String file) {
         this.filePath = file;
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
-                if (line.isEmpty()) continue;
+                if (line.isEmpty()) continue;  // skip empty lines
+
                 // Format: name,username,password
                 String[] parts = line.split(",", 3);
-                if (parts.length < 3) continue;
+                if (parts.length < 3) continue;  // skip malformed lines
+
                 String name     = parts[0].trim();
                 String username = parts[1].trim();
                 String password = parts[2].trim();
+
+                // Add the user to the in-memory map
                 users.put(username, new User(name, username, password));
             }
-            br.close();
+        } catch (FileNotFoundException fnfe) {
+            System.out.println("[AuthManager] Users file not found: " + file);
+        } catch (IOException ioe) {
+            System.out.println("[AuthManager] Error reading users file: " + ioe.getMessage());
         } catch (Exception e) {
-            System.out.println("[AuthManager] Could not load users file: " + e.getMessage());
+            System.out.println("[AuthManager] Unexpected error loading users file: " + e.getMessage());
         }
     }
 
@@ -59,7 +66,7 @@ public class AuthManager {
     }
 
     // Append the new user to the users file so it persists across restarts.
-    private void persistUser(String name, String username, String password) {
+    private synchronized void persistUser(String name, String username, String password) { // one user writes at a time
         try (PrintWriter pw = new PrintWriter(new FileWriter(filePath, true))) {
             pw.println(name + "," + username + "," + password);
         } catch (Exception e) {

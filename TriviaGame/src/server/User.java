@@ -8,7 +8,7 @@ public class User {
     private String username;
     private String password;
     private int sessionScore;                   // score for the current game session
-    private List<Integer> scoreHistory;         // history of final scores from past games
+    private List<Integer> scoreHistory = Collections.synchronizedList(new ArrayList<>());        // history of final scores from past games
 
     public User(String name, String username, String password) {
         this.name         = name;
@@ -23,10 +23,10 @@ public class User {
     public String getPassword() { return password; }
     public int    getScore()    { return sessionScore; }
 
-    public void addScore(int points) { sessionScore += points; }
+    public synchronized void addScore(int points) { sessionScore += points; }
 
     /** Called at the end of a game to snapshot the score into history and reset. */
-    public void finalizeScore() {
+    public synchronized void finalizeScore() {
         scoreHistory.add(sessionScore);
         sessionScore = 0;
     }

@@ -90,9 +90,12 @@ public class GameManager {
         long deadlineMs = System.currentTimeMillis() + QUESTION_TIME_SECONDS * 1000L;
         questionActive = true;
 
-        List<Thread> readers = new ArrayList<>();
+        // ---- Executor for reading answers ----
+        ExecutorService executor = Executors.newFixedThreadPool(activePlayers.size());
+        List<Future<?>> futures = new ArrayList<>();
+
         for (ClientHandler player : activePlayers) {
-            Thread t = new Thread(() -> {
+            Future<?> f = executor.submit(() -> {
                 while (System.currentTimeMillis() < deadlineMs) {
                     long remaining = deadlineMs - System.currentTimeMillis();
                     if (remaining <= 0) break;
@@ -103,28 +106,32 @@ public class GameManager {
                         broadcast(player.getUser().getName() + " has left the game.");
                         break;
                     }
-                    if (!answered.contains(player)) {
-                        answered.add(player);
-                        submissions.put(player, answer.toUpperCase());
-                        player.sendMessage("Answer received: " + answer.toUpperCase());
+                    String normalized = answer.toUpperCase();
+                    if (!normalized.matches("[ABCD]")) {
+                        player.sendMessage("[!] Invalid answer. Please answer A, B, C, or D.");
+                        continue;
+                    }
+                    if (answered.add(player)) {  // ensures only first answer is accepted
+                        submissions.put(player, normalized);
+                        player.sendMessage("Answer received: " + normalized);
                     } else {
-                        // Req 11: answer submitted but already answered this round
                         player.sendMessage("[!] You already submitted an answer for this question.");
                     }
                 }
             });
-            t.setDaemon(true);
-            readers.add(t);
-            t.start();
+            futures.add(f);
         }
 
+        // Countdown display
         runCountdown(deadlineMs);
         questionActive = false;
 
-        for (Thread t : readers) {
-            try { t.join(QUESTION_TIME_SECONDS * 1000L + 500L); }
-            catch (InterruptedException ignored) {}
+        // Wait for all player answer threads to finish
+        for (Future<?> f : futures) {
+            try { f.get(QUESTION_TIME_SECONDS + 1, TimeUnit.SECONDS); } catch (Exception ignored) {}
         }
+
+        executor.shutdownNow(); // shutdown executor
 
         broadcast("");
         broadcast("Time is up! Evaluating answers...");
@@ -138,7 +145,7 @@ public class GameManager {
 
     private void runCountdown(long deadlineMs) {
         Set<Integer> fired = new HashSet<>();
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             long remaining = deadlineMs - System.currentTimeMillis();
             if (remaining <= 0) break;
             int secondsLeft = (int) Math.ceil(remaining / 1000.0);
@@ -250,8 +257,12 @@ public class GameManager {
 
     public boolean isQuestionActive() { return questionActive; }
 
-    private void broadcast(String message) {
-        for (ClientHandler player : activePlayers) player.sendMessage(message);
+    private void broadcast(String message) {    // msgs not only for active but also disconnected
+        for (ClientHandler player : players) {
+            if (player != null) {
+                player.sendMessage(message);
+            }
+        }
     }
 
     private String playerNames() {

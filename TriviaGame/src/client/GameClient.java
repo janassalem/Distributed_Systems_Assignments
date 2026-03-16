@@ -31,7 +31,8 @@ public class GameClient {
                 } catch (Exception e) {
                     // ignore
                 }
-                System.out.println("Disconnected from server.");
+                System.out.println("Server disconnected. Exiting...");
+                System.exit(0);
             });
             readerThread.setDaemon(true);
             readerThread.start();
