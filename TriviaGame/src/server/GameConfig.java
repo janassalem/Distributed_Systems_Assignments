@@ -31,10 +31,10 @@ public class GameConfig {
                     case "points_per_correct":   pointsPerCorrect    = Integer.parseInt(val); break;
                 }
             }
-            System.out.println("[Config] Loaded: min=" + minPlayers + " max=" + maxPlayers
+            System.out.println("[Config.txt] Loaded: min=" + minPlayers + " max=" + maxPlayers
                     + " time=" + questionTimeSeconds + "s pts=" + pointsPerCorrect);
         } catch (Exception e) {
-            System.out.println("[Config] Could not load config file, using defaults: " + e.getMessage());
+            System.out.println("[Config.txt] Could not load config file, using defaults: " + e.getMessage());
         }
     }
 

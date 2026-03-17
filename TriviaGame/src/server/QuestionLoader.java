@@ -17,6 +17,8 @@ public class QuestionLoader {
 
                 String[] parts = line.split("\\|");
 
+                if (parts.length < 5) continue;
+
                 String category = parts[0];
                 String difficulty = parts[1];
                 String text = parts[2];

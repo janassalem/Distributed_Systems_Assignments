@@ -230,11 +230,11 @@ public class ClientHandler implements Runnable {
                     broadcastTeam(teamB, "Matched against Team '" + teamA.getName() + "'! Game starting...");
 
                     // Set latches for all non-creator players too
-//                    for (ClientHandler c : allPlayers) {
-//                        if (c != ClientHandler.this) {
-//                            c.gameLatch = new CountDownLatch(1);
-//                        }
-//                    }
+                    for (ClientHandler c : allPlayers) {
+                        if (c != ClientHandler.this) {
+                            c.gameLatch = new CountDownLatch(1);
+                        }
+                    }
 
                     gameServer.startTeamGame(allPlayers, filtered);
                     return;
@@ -317,11 +317,12 @@ public class ClientHandler implements Runnable {
     // Auth phase
     // =========================================================================
 
-    private boolean authPhase() throws IOException {
+    private boolean authPhase() throws IOException, InterruptedException {
         while (true) {
             sendMessage("\n[1] Login");
             sendMessage("[2] Register");
-            sendMessage("Choice: ");
+            sendMessage("Choice:");
+            Thread.sleep(100);
             String choice = readLine();
             if (choice == null || choice.equals("-")) return false;
             if (choice.equals("1")) { if (doLogin())    return true; }
@@ -415,6 +416,16 @@ public class ClientHandler implements Runnable {
 
         // Remove from waiting team
         if (waitingTeamName != null) {
+            Team t = gameServer.getTeamManager().getTeam(waitingTeamName);
+            if (t != null) {
+                for (ClientHandler member : t.getMembers()) {
+                    if (member != this) {
+                        member.sendMessage("[!] The team creator disconnected. Returning to menu...");
+                        CountDownLatch l = member.gameLatch;
+                        if (l != null) l.countDown();
+                    }
+                }
+            }
             gameServer.getTeamManager().removeTeam(waitingTeamName);
         }
 

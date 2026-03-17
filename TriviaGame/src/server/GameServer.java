@@ -8,13 +8,13 @@ import java.util.concurrent.*;
 
 public class GameServer {
 
-    private static final int PORT = 5000;
+    private static final int PORT = 5001;
 
-    private static final String BASE_DIR = "./";
-    private static final String USERS_FILE     = BASE_DIR + "Data/users.txt";
+    private static final String BASE_DIR = "";
+    private static final String USERS_FILE     = BASE_DIR + "Data/user.txt";
     private static final String SCORES_FILE    = BASE_DIR + "Data/scores.txt";
     private static final String QUESTIONS_FILE = BASE_DIR + "Data/questions.txt";
-    private static final String CONFIG_FILE    = BASE_DIR + "Data/config.txt";
+    private static final String CONFIG_FILE    = BASE_DIR + "Data/Config.txt";
 
     // ---- Thread pool for games ----
     private final ExecutorService gamePool = Executors.newCachedThreadPool();    //track many threads instead making them manually
